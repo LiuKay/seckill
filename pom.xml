@@ -38,11 +38,21 @@
       <version>5.1.39</version>
       <scope>runtime</scope>
     </dependency>
+    <!--<dependency>-->
+      <!--<groupId>c3p0</groupId>-->
+      <!--<artifactId>c3p0</artifactId>-->
+      <!--<version>0.9.1.2</version>-->
+    <!--</dependency>-->
+
+    <!-- druid 连接池-->
     <dependency>
-      <groupId>c3p0</groupId>
-      <artifactId>c3p0</artifactId>
-      <version>0.9.1.2</version>
+      <groupId>com.alibaba</groupId>
+      <artifactId>druid</artifactId>
+      <version>1.1.9</version>
     </dependency>
+
+
+
     <!-- dao框架依赖-->
     <dependency>
       <groupId>org.mybatis</groupId>

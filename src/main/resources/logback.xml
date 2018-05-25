@@ -1,16 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder
-            by default -->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoding>UTF-8</encoding>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
-            </pattern>
+            <pattern>[%d{HH:mm:ss.SSS}][%p][%c{40}][%t] %m%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+    </appender>
+
+
+    <appender name="seckill" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>D:\devlogs\seckill.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>D:\devlogs\seckill.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <append>true</append>
+            <!--10天-->
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{HH:mm:ss.SSS}][%p][%c{40}][%t] %m%n</pattern>
         </encoder>
     </appender>
 
-    <root level="debug">
-        <appender-ref ref="STDOUT" />
+
+    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>D:\devlogs\seckill_error.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>D:\devlogs\seckill_error.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <append>true</append>
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{HH:mm:ss.SSS}][%p][%c{40}][%t] %m%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <logger name="org.seckill" additivity="false" level="INFO" >
+        <appender-ref ref="seckill" />
+        <appender-ref ref="console"/>
+    </logger>
+
+
+
+    <!-- mybatis log 日志  sql记录-->
+
+    <logger name="org.seckill.dao" level="DEBUG"/>
+
+    <!--<logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="DEBUG" >-->
+    <!--<appender-ref ref="console"/>-->
+    <!--</logger>-->
+
+    <!--<logger name="java.sql.Connection" level="DEBUG">-->
+    <!--<appender-ref ref="console"/>-->
+    <!--</logger>-->
+    <!--<logger name="java.sql.Statement" level="DEBUG">-->
+    <!--<appender-ref ref="console"/>-->
+    <!--</logger>-->
+
+    <!--<logger name="java.sql.PreparedStatement" level="DEBUG">-->
+    <!--<appender-ref ref="console"/>-->
+    <!--</logger>-->
+
+
+    <root level="DEBUG">
+        <appender-ref ref="console"/>
+        <appender-ref ref="error"/>
     </root>
+
 </configuration>
