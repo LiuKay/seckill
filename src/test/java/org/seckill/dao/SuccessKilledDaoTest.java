@@ -5,10 +5,10 @@ import org.junit.runner.RunWith;
 import org.seckill.dao.SeckillDao;
 import org.seckill.dao.SuccessKilledDao;
 import org.seckill.entity.SuccessKilled;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.Resource;
 
 /**
  * Created by kay on 2017/4/28.
@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 @ContextConfiguration({"classpath:spring/spring-dao.xml"})
 public class SuccessKilledDaoTest {
 
-    @Resource
+    @Autowired
     private SuccessKilledDao successKilledDao;
 
     /**
