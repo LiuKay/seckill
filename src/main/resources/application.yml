@@ -1,0 +1,25 @@
+server:
+  port: 8080
+mybatis:
+  configuration:
+    use-generated-keys: true
+    use-column-label: true
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: org.seckill.entity
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/seckill?useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      enable: true
+      test-while-idle: true
+      validation-query: "SELECT 'x'"
+      max-active: 100
+      min-idle: 10
+      initial-size: 10
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20

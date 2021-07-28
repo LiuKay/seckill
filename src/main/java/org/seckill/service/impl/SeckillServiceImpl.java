@@ -1,8 +1,8 @@
 package org.seckill.service.impl;
 
+import org.seckill.cache.RedisDao;
 import org.seckill.dao.SeckillDao;
 import org.seckill.dao.SuccessKilledDao;
-import org.seckill.dao.cache.RedisDao;
 import org.seckill.dto.Exposer;
 import org.seckill.dto.SeckillExecution;
 import org.seckill.entity.Seckill;
@@ -28,7 +28,7 @@ import java.util.List;
 @Service
 public class SeckillServiceImpl implements SeckillService{
 
-    private Logger logger= LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private SeckillDao seckillDao;
@@ -40,7 +40,7 @@ public class SeckillServiceImpl implements SeckillService{
     private RedisDao redisDao;
 
     //md盐值字符串，混淆
-    private final String slat="dasdasdafafaukfh.jpi7o2o;3ip;'''''''135";
+    private static final String slat = "dasdasdafafaukfh.jpi7o2o;3ip;'''''''135";
 
     public List<Seckill> getSeckillList() {
         return seckillDao.queryAll(0,4);
@@ -85,8 +85,7 @@ public class SeckillServiceImpl implements SeckillService{
 
     private String getMD5(long seckillId){
         String base=seckillId+"/"+slat;
-        String md5= DigestUtils.md5DigestAsHex(base.getBytes());
-        return md5;
+        return DigestUtils.md5DigestAsHex(base.getBytes());
     }
 
     /**
@@ -97,12 +96,12 @@ public class SeckillServiceImpl implements SeckillService{
      * 3-不是所有的方法都需要事务
      */
     @Transactional
-    public SeckillExecution executeSeckill(long seckillId, long userphone, String md5) throws SeckillException, RepeatKillException, SeckillCloseException {
-        if(md5==null || !md5.equals(getMD5(seckillId))){
+    public SeckillExecution executeSeckill(long seckillId, long userphone, String md5) throws SeckillException {
+        if (md5 == null || !md5.equals(getMD5(seckillId))) {
             throw new SeckillException("seckill data rewrite!");
         }
         //执行秒杀逻辑>减库存+记录购买记录
-        Date nowTime=new Date();
+        Date nowTime = new Date();
         try {
             //记录购买行为
             int insertCount = successKilledDao.insertSuccessKilled(seckillId, userphone);
@@ -121,12 +120,9 @@ public class SeckillServiceImpl implements SeckillService{
                     return new SeckillExecution(seckillId, SeckillStatEnum.SUCCESS, successKilled);
                 }
             }
-        }catch (SeckillCloseException e1) {
+        } catch (SeckillCloseException | RepeatKillException e1) {
             throw e1;
-        }catch (RepeatKillException e2){
-            throw e2;
-        }catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        } catch (Exception e) {
             //编译异常转换，spring发现后会回滚
             throw new SeckillException("seckill inner error:" + e.getMessage());
         }

@@ -1,4 +1,4 @@
-package org.seckill.dao.cache;
+package org.seckill.cache;
 
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
@@ -23,7 +23,7 @@ public class RedisDao {
     private final JedisPool jedisPool;
 
     //创建一个schema 用于序列化的转义
-    private RuntimeSchema<Seckill> schema = RuntimeSchema.createFrom(Seckill.class);
+    private final RuntimeSchema<Seckill> schema = RuntimeSchema.createFrom(Seckill.class);
 
     public RedisDao(int port, String host) {
         jedisPool = new JedisPool(host, port);
@@ -31,8 +31,7 @@ public class RedisDao {
 
     public Seckill getSeckill(long seckillId) {
         try {
-            Jedis jedis = jedisPool.getResource();
-            try {
+            try (Jedis jedis = jedisPool.getResource()) {
                 String key = KEY_PERFIX + seckillId;
                 //没有用jdk内部的序列化
                 //采用protostuff来自定义序列化 get->byte[]->Object
@@ -44,8 +43,6 @@ public class RedisDao {
                     ProtostuffIOUtil.mergeFrom(bytes, seckill, schema);
                     return seckill;
                 }
-            } finally {
-                jedis.close();
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -56,16 +53,12 @@ public class RedisDao {
     public String putSeckill(Seckill seckill) {
         //todo Object->序列化->放入redis
         try {
-            Jedis jedis = jedisPool.getResource();
-            try {
+            try (Jedis jedis = jedisPool.getResource()) {
                 String key = KEY_PERFIX + seckill.getSeckillId();
                 byte[] bytes = ProtostuffIOUtil.toByteArray(seckill, schema,
-                        LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
+                                                            LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
                 int timeout = 60 * 60;  //设置过期时间过一天
-                String result = jedis.setex(key.getBytes(), timeout, bytes);
-                return result; //返回ok或错误信息
-            } finally {
-                jedis.close();
+                return jedis.setex(key.getBytes(), timeout, bytes); //返回ok或错误信息
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
