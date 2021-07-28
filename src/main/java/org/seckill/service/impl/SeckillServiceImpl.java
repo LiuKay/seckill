@@ -1,5 +1,6 @@
 package org.seckill.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.seckill.cache.RedisDao;
 import org.seckill.dao.SeckillDao;
 import org.seckill.dao.SuccessKilledDao;
@@ -12,8 +13,6 @@ import org.seckill.exception.RepeatKillException;
 import org.seckill.exception.SeckillCloseException;
 import org.seckill.exception.SeckillException;
 import org.seckill.service.SeckillService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +24,9 @@ import java.util.List;
 /**
  * Created by kay on 2017/4/29.
  */
+@Slf4j
 @Service
-public class SeckillServiceImpl implements SeckillService{
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+public class SeckillServiceImpl implements SeckillService {
 
     @Autowired
     private SeckillDao seckillDao;
@@ -39,11 +37,11 @@ public class SeckillServiceImpl implements SeckillService{
     @Autowired
     private RedisDao redisDao;
 
-    //md盐值字符串，混淆
+    //TODO: move out md盐值字符串，混淆
     private static final String slat = "dasdasdafafaukfh.jpi7o2o;3ip;'''''''135";
 
     public List<Seckill> getSeckillList() {
-        return seckillDao.queryAll(0,4);
+        return seckillDao.queryAll(0, 4);
     }
 
     public Seckill getById(long seckillId) {
@@ -52,6 +50,7 @@ public class SeckillServiceImpl implements SeckillService{
 
     /**
      * todo 优化点1：将秒杀商品对象缓存在redis中，避免高并发下大量去数据库查询
+     *
      * @param seckillId
      * @return
      */
@@ -60,31 +59,31 @@ public class SeckillServiceImpl implements SeckillService{
         //todo 在缓存超时的基础上维护一致性
         //1.先去缓存中找
         Seckill seckill = redisDao.getSeckill(seckillId);
-        if(seckill==null){
+        if (seckill == null) {
             //2.缓存中没有则去DB里面找
             seckill = seckillDao.queryById(seckillId);
             if (seckill == null) {
-                return new Exposer(false,seckillId);
-            }else {
+                return new Exposer(false, seckillId);
+            } else {
                 //3.从数据库取出来之后再放入缓存
                 redisDao.putSeckill(seckill);
             }
         }
-        Date startTime=seckill.getStartTime();
-        Date endTime=seckill.getEndTime();
-        Date nowTime=new Date();
-        if(nowTime.getTime()<startTime.getTime()
-                || nowTime.getTime()>endTime.getTime()){
-            return new Exposer(false,seckillId,nowTime.getTime(),startTime.getTime(),endTime.getTime());
+        Date startTime = seckill.getStartTime();
+        Date endTime = seckill.getEndTime();
+        Date nowTime = new Date();
+        if (nowTime.getTime() < startTime.getTime()
+                || nowTime.getTime() > endTime.getTime()) {
+            return new Exposer(false, seckillId, nowTime.getTime(), startTime.getTime(), endTime.getTime());
         }
         //不可逆的转化md5字符串
-        String md5=getMD5(seckillId);//TODO
+        String md5 = getMD5(seckillId);//TODO
 
-        return new Exposer(true,md5,seckillId);
+        return new Exposer(true, md5, seckillId);
     }
 
-    private String getMD5(long seckillId){
-        String base=seckillId+"/"+slat;
+    private String getMD5(long seckillId) {
+        String base = seckillId + "/" + slat;
         return DigestUtils.md5DigestAsHex(base.getBytes());
     }
 
@@ -109,7 +108,7 @@ public class SeckillServiceImpl implements SeckillService{
             if (insertCount <= 0) {
                 throw new RepeatKillException("seckill repeat");
             } else {
-            //减库存，todo 执行竞争条件，减库存，update获得行级锁
+                //减库存，todo 执行竞争条件，减库存，update获得行级锁
                 int updateCount = seckillDao.reduceNumber(seckillId, nowTime);
                 if (updateCount <= 0) {
                     //没有更新记录

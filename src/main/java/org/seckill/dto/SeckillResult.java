@@ -2,7 +2,6 @@ package org.seckill.dto;
 
 /**
  * Created by kay on 2017/4/30.
- *
  */
 
 //所有ajax请求的返回类型，封装json的结果
