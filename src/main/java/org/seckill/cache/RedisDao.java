@@ -3,9 +3,11 @@ package org.seckill.cache;
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
-import org.seckill.entity.Seckill;
+
+import org.seckill.entity.SeckillActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -23,13 +25,13 @@ public class RedisDao {
     private final JedisPool jedisPool;
 
     //创建一个schema 用于序列化的转义
-    private final RuntimeSchema<Seckill> schema = RuntimeSchema.createFrom(Seckill.class);
+    private final RuntimeSchema<SeckillActivity> schema = RuntimeSchema.createFrom(SeckillActivity.class);
 
     public RedisDao(int port, String host) {
         jedisPool = new JedisPool(host, port);
     }
 
-    public Seckill getSeckill(long seckillId) {
+    public SeckillActivity getSeckill(long seckillId) {
         try {
             try (Jedis jedis = jedisPool.getResource()) {
                 String key = KEY_PERFIX + seckillId;
@@ -38,10 +40,10 @@ public class RedisDao {
                 byte[] bytes = jedis.get(key.getBytes());
                 if (bytes != null) {
                     //空对象
-                    Seckill seckill = schema.newMessage();
+                    SeckillActivity seckillActivity = schema.newMessage();
                     //填充空对象
-                    ProtostuffIOUtil.mergeFrom(bytes, seckill, schema);
-                    return seckill;
+                    ProtostuffIOUtil.mergeFrom(bytes, seckillActivity, schema);
+                    return seckillActivity;
                 }
             }
         } catch (Exception e) {
@@ -50,12 +52,12 @@ public class RedisDao {
         return null;
     }
 
-    public String putSeckill(Seckill seckill) {
+    public String putSeckill(SeckillActivity seckillActivity) {
         //todo Object->序列化->放入redis
         try {
             try (Jedis jedis = jedisPool.getResource()) {
-                String key = KEY_PERFIX + seckill.getSeckillId();
-                byte[] bytes = ProtostuffIOUtil.toByteArray(seckill, schema,
+                String key = KEY_PERFIX + seckillActivity.getSeckillId();
+                byte[] bytes = ProtostuffIOUtil.toByteArray(seckillActivity, schema,
                                                             LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
                 int timeout = 60 * 60;  //设置过期时间过一天
                 return jedis.setex(key.getBytes(), timeout, bytes); //返回ok或错误信息

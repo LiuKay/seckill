@@ -2,7 +2,7 @@ package org.seckill.service;
 
 import org.seckill.dto.Exposer;
 import org.seckill.dto.SeckillExecution;
-import org.seckill.entity.Seckill;
+import org.seckill.entity.SeckillActivity;
 import org.seckill.exception.SeckillException;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public interface SeckillService {
      *
      * @return
      */
-    List<Seckill> getSeckillList();
+    List<SeckillActivity> getSeckillList();
 
     /**
      * 查询单个秒杀记录
@@ -28,7 +28,7 @@ public interface SeckillService {
      * @param seckillId
      * @return
      */
-    Seckill getById(long seckillId);
+    SeckillActivity getById(long seckillId);
 
     /**
      * 秒杀开始时，输出秒杀接口的url

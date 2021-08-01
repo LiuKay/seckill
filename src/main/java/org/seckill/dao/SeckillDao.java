@@ -1,7 +1,7 @@
 package org.seckill.dao;
 
 import org.apache.ibatis.annotations.Param;
-import org.seckill.entity.Seckill;
+import org.seckill.entity.SeckillActivity;
 
 import java.util.Date;
 import java.util.List;
@@ -25,7 +25,7 @@ public interface SeckillDao {
      * @param seckillId
      * @return
      */
-    Seckill queryById(long seckillId);
+    SeckillActivity queryById(long seckillId);
 
     /**
      * 根据偏移量查询秒杀商品列表
@@ -34,5 +34,5 @@ public interface SeckillDao {
      * @param limit
      * @return
      */
-    List<Seckill> queryAll(@Param("offset") int offset, @Param("limit") int limit);
+    List<SeckillActivity> queryAll(@Param("offset") int offset, @Param("limit") int limit);
 }

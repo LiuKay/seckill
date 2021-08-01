@@ -11,10 +11,10 @@
     </appender>
 
 
-    <appender name="seckill" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>devlogs\seckill.log</File>
+    <appender name="seckillActivity" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>devlogs\seckillActivity.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>devlogs\seckill.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <fileNamePattern>devlogs\seckillActivity.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
             <append>true</append>
             <!--10天-->
             <maxHistory>10</maxHistory>
@@ -42,16 +42,15 @@
         </filter>
     </appender>
 
-    <logger name="org.seckill" additivity="false" level="INFO" >
-        <appender-ref ref="seckill" />
+    <logger name="org.seckillActivity" additivity="false" level="INFO">
+        <appender-ref ref="seckillActivity"/>
         <appender-ref ref="console"/>
     </logger>
 
 
-
     <!-- mybatis log 日志  sql记录-->
 
-    <logger name="org.seckill.dao" level="DEBUG"/>
+    <logger name="org.seckillActivity.dao" level="DEBUG"/>
 
     <!--<logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="DEBUG" >-->
     <!--<appender-ref ref="console"/>-->

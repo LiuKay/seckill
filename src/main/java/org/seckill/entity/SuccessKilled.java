@@ -13,14 +13,14 @@ public class SuccessKilled {
 
     //变通
     //复合属性,多对一
-    private Seckill seckill;
+    private SeckillActivity seckillActivity;
 
-    public Seckill getSeckill() {
-        return seckill;
+    public SeckillActivity getSeckill() {
+        return seckillActivity;
     }
 
-    public void setSeckill(Seckill seckill) {
-        this.seckill = seckill;
+    public void setSeckill(SeckillActivity seckillActivity) {
+        this.seckillActivity = seckillActivity;
     }
 
 

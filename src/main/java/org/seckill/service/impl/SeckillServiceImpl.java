@@ -1,12 +1,11 @@
 package org.seckill.service.impl;
 
-import lombok.extern.slf4j.Slf4j;
 import org.seckill.cache.RedisDao;
 import org.seckill.dao.SeckillDao;
 import org.seckill.dao.SuccessKilledDao;
 import org.seckill.dto.Exposer;
 import org.seckill.dto.SeckillExecution;
-import org.seckill.entity.Seckill;
+import org.seckill.entity.SeckillActivity;
 import org.seckill.entity.SuccessKilled;
 import org.seckill.enums.SeckillStatEnum;
 import org.seckill.exception.RepeatKillException;
@@ -20,6 +19,8 @@ import org.springframework.util.DigestUtils;
 
 import java.util.Date;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by kay on 2017/4/29.
@@ -40,11 +41,11 @@ public class SeckillServiceImpl implements SeckillService {
     //TODO: move out md盐值字符串，混淆
     private static final String slat = "dasdasdafafaukfh.jpi7o2o;3ip;'''''''135";
 
-    public List<Seckill> getSeckillList() {
+    public List<SeckillActivity> getSeckillList() {
         return seckillDao.queryAll(0, 4);
     }
 
-    public Seckill getById(long seckillId) {
+    public SeckillActivity getById(long seckillId) {
         return seckillDao.queryById(seckillId);
     }
 
@@ -58,19 +59,19 @@ public class SeckillServiceImpl implements SeckillService {
 
         //todo 在缓存超时的基础上维护一致性
         //1.先去缓存中找
-        Seckill seckill = redisDao.getSeckill(seckillId);
-        if (seckill == null) {
+        SeckillActivity seckillActivity = redisDao.getSeckill(seckillId);
+        if (seckillActivity == null) {
             //2.缓存中没有则去DB里面找
-            seckill = seckillDao.queryById(seckillId);
-            if (seckill == null) {
+            seckillActivity = seckillDao.queryById(seckillId);
+            if (seckillActivity == null) {
                 return new Exposer(false, seckillId);
             } else {
                 //3.从数据库取出来之后再放入缓存
-                redisDao.putSeckill(seckill);
+                redisDao.putSeckill(seckillActivity);
             }
         }
-        Date startTime = seckill.getStartTime();
-        Date endTime = seckill.getEndTime();
+        Date startTime = seckillActivity.getStartTime();
+        Date endTime = seckillActivity.getEndTime();
         Date nowTime = new Date();
         if (nowTime.getTime() < startTime.getTime()
                 || nowTime.getTime() > endTime.getTime()) {

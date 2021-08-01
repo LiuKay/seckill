@@ -1,10 +1,9 @@
 package org.seckill.web;
 
-import lombok.extern.slf4j.Slf4j;
 import org.seckill.dto.Exposer;
 import org.seckill.dto.SeckillExecution;
 import org.seckill.dto.SeckillResult;
-import org.seckill.entity.Seckill;
+import org.seckill.entity.SeckillActivity;
 import org.seckill.enums.SeckillStatEnum;
 import org.seckill.exception.RepeatKillException;
 import org.seckill.exception.SeckillCloseException;
@@ -20,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @RestController
 @RequestMapping("/seckill")   //url:模块/资源/{id}/细分
@@ -34,13 +35,13 @@ public class SeckillController {
 
     //商品列表
     @GetMapping("/list")
-    public List<Seckill> list() {
+    public List<SeckillActivity> list() {
         return seckillService.getSeckillList();
     }
 
     //商品详情
     @GetMapping("/{seckillId}/detail")
-    public Seckill detail(@PathVariable("seckillId") Long seckillId) {
+    public SeckillActivity detail(@PathVariable("seckillId") Long seckillId) {
         return seckillService.getById(seckillId);
     }
 

@@ -3,31 +3,31 @@
 <html>
 <head>
     <title>秒杀详情页</title>
-    <%@include file="common/head.jsp"%>
+    <%@include file="common/head.jsp" %>
 </head>
 <body>
-    <div class="container">
-        <div class="panel panel-default text-center">
-            <div class="panel-heading">
-                <h1>${seckill.name}</h1>
-            </div>
-        </div>
-        <div class="panel-body text-center">
-            <h2 class="text-danger">
-                <!-- 显示time图标-->
-                <span class="glyphicon glyphicon-time"></span>
-                <!-- 展示倒计时-->
-                <span class="glyphicon" id="seckill-box"></span>
-            </h2>
+<div class="container">
+    <div class="panel panel-default text-center">
+        <div class="panel-heading">
+            <h1>${seckillActivity.name}</h1>
         </div>
     </div>
-    <!-- 模态框（Modal） -->
-    <div class="modal fade" id="killPhoneModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title text-center">
-                        <span class="glyphicon glyphicon-phone"></span>秒杀电话：
+    <div class="panel-body text-center">
+        <h2 class="text-danger">
+            <!-- 显示time图标-->
+            <span class="glyphicon glyphicon-time"></span>
+            <!-- 展示倒计时-->
+            <span class="glyphicon" id="seckillActivity-box"></span>
+        </h2>
+    </div>
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="killPhoneModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-center">
+                    <span class="glyphicon glyphicon-phone"></span>秒杀电话：
                     </h3>
                 </div>
                 <div class="modal-body">
@@ -59,16 +59,16 @@
 <!-- 倒计时插件-->
 <script src="http://cdn.bootcss.com/jquery.countdown/2.2.0/jquery.countdown.min.js"></script>
 
-<script src="/resources/script/seckill.js" type="text/javascript"></script>
+<script src="/resources/script/seckillActivity.js" type="text/javascript"></script>
 
 <script type="text/javascript">
     $(function () {
-        seckill.detail.inint({
-            //使用EL表达式传入参数
-            seckillId:${seckill.seckillId},
-            startTime:${seckill.startTime.time}, //毫秒
-            endTime:${seckill.endTime.time}
-        });
+        seckillActivity.detail.inint({
+                                         //使用EL表达式传入参数
+                                         seckillId:${seckillActivity.seckillId},
+                                         startTime:${seckillActivity.startTime.time}, //毫秒
+                                         endTime:${seckillActivity.endTime.time}
+                                     });
     });
 </script>
 </html>
